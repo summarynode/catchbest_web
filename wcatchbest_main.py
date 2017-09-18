@@ -150,11 +150,14 @@ class Handler(BaseHTTPRequestHandler):
 
         elif parsed_path.path == "/search":
 
+           listAll = []
+           present_data=""
            s_date = ""
            s_acc_v = ""
            s_tr_v = ""
            s_per = ""
            msg = ""
+           t_who = ""
            result = urlpar.parse_qs(parsed_path.query)
            t_ip = self.client_address[0]
            t_code = result.get('code', None)
@@ -166,20 +169,26 @@ class Handler(BaseHTTPRequestHandler):
               msg = t_code
 
               api = ErpySQL()
-              sql = "select s_date, s_volume as acc_v, s_acc_volume as tr_v, s_per as per from acc_volume where s_code='" + t_code + "' order by s_date desc"
+              sql = "select CONVERT(s_date, CHAR(8)) as r_date, s_volume as acc_v, s_acc_volume as tr_v, s_per as per from acc_volume where s_code='" + t_code + "' order by s_date desc"
               rows = api.select(sql)
               for row in rows:
-                 s_date  = row["s_date"]
-                 s_acc_v = row["acc_v"]
-                 s_tr_v  = row["tr_v"]
-                 s_per   = row["per"]
+                 s_date  = str(row[0])
+                 s_acc_v = str(row[1])
+                 s_tr_v  = str(row[2])
+                 s_per   = str(row[3])
 
-                 print "%s - [%s] [%s] [%s] [%s]\n" % (t_code, s_date, s_acc_v, s_tr_v, s_per)
+                 rlist = "%s|%s|%s|%s|%s" % (t_code, s_date, s_acc_v, s_tr_v, s_per)
+                 listAll.append(rlist)
+                 msg = wcatchbest_present.SinhoPresent().presentation_acc(rlist, t_who)
+                 #print rlist
 
+              print listAll
+
+           send_len = len(msg.encode("utf-8"))
            self.send_response(200)
            encoding = sys.getfilesystemencoding()
            self.send_header("Content-type", "text/html; charset=%s" % encoding)
-           self.send_header("Content-Length", str(len(msg)))
+           self.send_header("Content-Length", str(send_len))
            self.end_headers()
            self.wfile.write(msg)
 
