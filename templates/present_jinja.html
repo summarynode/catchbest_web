@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>주식신호등(CatchBest)</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</head>
+<body Link="BLACK" VLINK="BLACK" ALINK="BLUE">
+
+<div class="container" style="text-align:right">
+<div align="left" nowrap>
+<font color=#FF1493 size=5>* 주식신호등 카페: <a href="http://cafe.naver.com/oneclick30" target="_blank">http://cafe.naver.com/oneclick30</a></font><br><br>        
+        <font color=1E90FF size=4>* Data를 보시기전에 항상 새로고침을 하세요!!</font><br>
+        <font color=black  size=4>* Update Time :{{ curDate }} /  {{ curTime }}</font><br><br>
+
+{% if who == "erpy" %}
+#<a href="http://catchbest.info:7778/get?key=best&who=erpy"><font color="red" size=4> 베스트 </font></a>
+#<a href="http://catchbest.info:7778/get?key=swing3&who=erpy"><font color="red" size=4> 스윙3 </font></a>
+#<a href="http://catchbest.info:7778/get?key=yuiju&who=erpy"><font color="red" size=4> 여의주 </font></a> 
+#<a href="http://catchbest.info:7778/get?key=accsignamount&who=erpy"><font color="red" size=4> 누순매TOP50 </font></a>
+#<a href="http://catchbest.info:7778/get?key=malbul&who=erpy"><font color="red" size=4> 말벌 </font></a><br>
+# 개수 : {{list_code|length}}, id: {{ who }}
+{% else %}
+#<a href="http://catchbest.info:7778/get?key=best"><font color="red" size=4> 베스트 </font></a>
+#<a href="http://catchbest.info:7778/get?key=swing3"><font color="red" size=4> 스윙3 </font></a>
+#<a href="http://catchbest.info:7778/get?key=accsignamount"><font color="red" size=4> 누순매TOP50 </font></a>
+#<a href="http://catchbest.info:7778/get?key=yuiju"><font color="red" size=4> 여의주 </font></a><br>
+{% endif %}
+
+</div>
+
+<table class="table table-bordered">
+<thead>
+        <tr bgcolor="#FFA07A">
+        <th width 100% nowrap><div align="center"><font color=#000000>종목</font></div></th>
+        <th width 100% nowrap><div align="center"><font color=#000000>코드</font></div></th>
+        <th width 100% nowrap><div align="center"><font color=#000000>등락</font></div></th>
+        <th width 100% nowrap><div align="center"><font color=#000000>시등락</font></div></th>
+        <th width 100% nowrap><div align="center"><font color=#000000>주가</font></div></th>
+        <th width 100% nowrap><div align="center"><font color=#000000>고가대비</font></div></th>
+        <th width 100% nowrap><div align="center"><font color=#000000>누순비</font></div></th>
+        <th width 100% nowrap><div align="center"><font color=#000000>누순매</font></div></th>
+        <th width 100% nowrap><div align="center"><font color=#000000>Max대비</font></div></th>
+        <th width 100% nowrap><div align="center"><font color=#000000>거래량</font></div></th>
+        <th width 100% nowrap><div align="center"><font color=#000000>주봉</font></div></th>
+        <th width 100% nowrap><div align="center"><font color=#000000>이평</font></div></th>
+        </tr>
+</thead>
+
+<tbody>
+
+{% for key in list_code %}
+<tr>
+<td width 100% align="left" nowrap><a href="https://search.naver.com/search.naver?where=news&sm=tab_jum&query={{ dict_name[key] }}"  target='_blank'><font color="black">{{ dict_name[key] }}</font></a></td>
+<td align="center"><a href='http://m.stock.naver.com/item/main.nhn#/stocks/{{ key }}/total' target='_blank'><font color="black">{{ key }}</font></a></td>
+
+
+{% if dict_pricePer[key]|int > 0 %}
+<td align="right" nowrap><font color=red>+{{ dict_pricePer[key] }} %</font></td>
+{% else %}
+<td align="right" nowrap><font color=blue>-{{ dict_pricePer[key] }} %</font></td>
+{% endif %}
+
+
+{% if dict_startPricePer[key]|int > 0 %}
+<td align="right" nowrap><font color=red>+{{ dict_startPricePer[key] }} %</font></td>
+{% else %}
+<td align="right" nowrap><font color=blue>-{{ dict_startPricePer[key] }} %</font></td>
+{% endif %}
+
+
+<td align="right" nowrap>{{ dict_curPrice[key] }}</td>
+
+
+{% if dict_topVSper[key]|int > 0 %}
+	{% if dict_topVSper[key]|int == 100 %}
+	<td align="center" nowrap><font color=red>MAX</font></td>
+	{% else %}
+	<td align="right" nowrap><font color=red>{{ dict_topVSper[key] }} %</font></td>
+	{% endif %}
+{% else %}
+<td align="right" nowrap><font color=blue>{{ dict_topVSper[key] }} %</font></td>
+{% endif %}
+
+
+{% if dict_accSignPer[key]|int > 30 %}
+<td align="right" nowrap><font color=red>{{ dict_accSignPer[key] }} %</font></td>
+{% else %}
+<td align="right" nowrap>{{ dict_accSignPer[key] }} %</td>
+{% endif %}
+
+
+<td align="right" nowrap>{{ dict_accSign[key] }}</td>
+
+
+{% if dict_accVSmax[key]|int >= 0 %}
+<td align="right" bgcolor="yellow" nowrap><font color=black>MAX</font></td>
+{% else %}
+<td align="right" nowrap><font color=black>{{ "{:,d}".format(dict_accVSmax[key]|int) }}</font></td>
+{% endif %}
+
+
+<td align="right" nowrap>{{ dict_tradeAmount[key] }}</td>
+
+
+{% if dict_weekBong[key]|int > 0 %}
+<td align="right" nowrap><font color=red>+{{ dict_weekBong[key] }} %</font></td>
+{% else %}
+<td align="right" nowrap><font color=black>{{ dict_weekBong[key] }} %</font></td>
+{% endif %}
+
+
+<td align="center" nowrap>{{ dict_priceMeans[key] }}</td>
+</tr>
+{% endfor %}
+</tbody>
+
+</table>
+</div>
+</body>
+</html>
